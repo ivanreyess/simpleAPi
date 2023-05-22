@@ -1,5 +1,6 @@
 package com.sv.simpleapi.controller;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sv.simpleapi.DTO.EmployeeDTO;
 import com.sv.simpleapi.model.Department;
@@ -26,6 +27,7 @@ import static org.hamcrest.Matchers.*;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.doNothing;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -65,6 +67,7 @@ class EmployeeControllerTest {
     }
 
     @Test
+    @DisplayName("GET /api/v1/employees")
     void getAllEmployees() throws Exception {
         Employee employee1 = Employee.builder()
                 .id(2L)
@@ -97,6 +100,7 @@ class EmployeeControllerTest {
     }
 
     @Test
+    @DisplayName("GET /api/v1/employees with id")
     void getEmployee() throws Exception {
 
         long employeeId = 1L;
@@ -141,7 +145,13 @@ class EmployeeControllerTest {
     }
 
     @Test
-    void deleteEmployee() {
+    @DisplayName("DELETE /api/v1/employee/{id} no content ")
+    void deleteEmployee() throws Exception {
+        doNothing().when(employeeService).delete(1L);
+
+        mockMvc.perform(delete("/api/v1/employees/{id}", 1L))
+                .andExpect(status().isNoContent());
+
     }
 
     @Test
@@ -150,7 +160,7 @@ class EmployeeControllerTest {
 
         employee.setDepartment(Department.DATA_ENGINEER);
 
-        given(employeeService.save(employee)).willReturn(employee);
+        given(employeeService.save(any(Employee.class))).willAnswer((invocation -> invocation.getArgument(0)));
         given(employeeService.exist(employee.getId())).willReturn(true);
 
 
@@ -168,7 +178,7 @@ class EmployeeControllerTest {
         employee.setDepartment(Department.DATA_ENGINEER);
         employee.setId(null);
 
-        given(employeeService.save(employee)).willReturn(employee);
+        given(employeeService.save(any(Employee.class))).willAnswer((invocation -> invocation.getArgument(0)));
         given(employeeService.exist(employee.getId())).willReturn(true);
 
 
@@ -180,7 +190,17 @@ class EmployeeControllerTest {
     }
 
     @Test
-    void partialUpdateEmployee() {
+    void partialUpdateEmployee() throws Exception {
+
+        given(employeeService.partialUpdate(any(Employee.class))).willReturn(Optional.of(employee));
+
+        given(employeeService.exist(1L)).willReturn(true);
+
+        mockMvc.perform(patch("/api/v1/employees/{id}", 1L)
+                .contentType("application/merge-patch+json")
+                .content(objectMapper.writeValueAsString(employee)))
+                .andExpect(status().isOk());
+
     }
 
     Employee toEmployee(EmployeeDTO employeeDTO) {
