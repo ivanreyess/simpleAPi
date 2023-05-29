@@ -12,9 +12,7 @@ import java.util.Optional;
 
 public interface EmployeeService {
 
-    default List<EmployeeDTO> findAll() {
-        return null;
-    }
+    List<Employee> findAll();
 
     Employee save();
 

@@ -2,7 +2,7 @@ package com.sv.simpleapi.service;
 
 
 import com.sv.simpleapi.DTO.EmployeeDTO;
-import com.sv.simpleapi.EmployeeRepository;
+import com.sv.simpleapi.repository.EmployeeRepository;
 import com.sv.simpleapi.model.Employee;
 import com.sv.simpleapi.response.EmployeeResponse;
 import org.springframework.data.domain.Page;
@@ -25,12 +25,14 @@ public class EmployeeServiceImpl implements EmployeeService {
 
 
     @Override
-    public List<EmployeeDTO> findAll() {
-        return employeeRepository.findAll().stream().map(employee -> EmployeeDTO.builder().id(employee.getId())
-                        .name(employee.getName())
-                        .email(employee.getEmail())
-                        .lastName(employee.getLastName()).build())
-                .toList();
+    public List<Employee> findAll() {
+        return employeeRepository.findAll();
+
+//                .stream().map(employee -> EmployeeDTO.builder().id(employee.getId())
+//                        .name(employee.getName())
+//                        .email(employee.getEmail())
+//                        .lastName(employee.getLastName()).build())
+//                .toList();
     }
 
     @Override

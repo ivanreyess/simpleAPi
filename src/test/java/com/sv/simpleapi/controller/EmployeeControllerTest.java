@@ -39,7 +39,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 class EmployeeControllerTest {
 
     @MockBean
-    EmployeeService employeeService;
+    private EmployeeService employeeService;
 
     @Autowired
     private MockMvc mockMvc;
@@ -132,8 +132,8 @@ class EmployeeControllerTest {
     @DisplayName("POST /api/v1/employees - Bad request")
     void createEmployeeFailed() throws Exception {
 
-//        given(employeeService.save(any()))
-//                .willAnswer((invocation -> invocation.getArgument(0)));
+        given(employeeService.save(any()))
+                .willAnswer((invocation -> invocation.getArgument(0)));
 
 
         mockMvc.perform(post("/api/v1/employees")

@@ -1,34 +1,34 @@
 package com.sv.simpleapi.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDateTime;
-import java.util.List;
 
+@Entity
 @Getter
 @Setter
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@ToString
-@Entity
-@Builder
-public class Employee {
+public class Review {
+
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "id", nullable = false)
     private Long id;
-    private String email;
-    private String name;
-    private String lastName;
+
+    private String title;
 
     @Enumerated(EnumType.STRING)
-    private Department department;
+    private ReviewType reviewType;
+
     private LocalDateTime createdAt;
 
-    @OneToMany(mappedBy = "employee")
-    private List<Review> reviews;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JsonIgnore
+    private Employee employee;
 
-    @OneToMany(mappedBy = "author")
-    private List<Submission> submissions;
+
 }
